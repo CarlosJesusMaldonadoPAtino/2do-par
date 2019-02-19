@@ -10,8 +10,9 @@
 <body>
    <body class="text-center">
     <form class="form-signin">
-  <img class="mb-4" src="img/LOGODOX.png">
-  <h1 id="text1" class="h3 mb-3 font-weight-normal">Hola Humano</h1>
+  <img class="mb-4" src="img/pat.png">
+  
+  <h1 id="text1" class="h3 mb-3 font-weight-normal">Registrese, ¿No?</h1>
   <label for="inputEmail" class="sr-only">Correo Electronico</label>
   <input type="email" id="inputEmail" class="form-control" placeholder="Dirección de correo" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
@@ -38,9 +39,18 @@
       "correo" : correo,
       "password" : pass  
     };
-    if (correo == "" || pass == "") {
+    if (correo == "" && pass == "") {
 
-       alert("correo o contraseña incorrectos!!");
+       alert("introduzca correo y contraseña !!1!!");
+    
+
+    }
+      if (correo=="") {
+      alert("inserte correo Electronico !!2!!");
+    }
+         if (pass =="") {
+          alert("inserte una contraseña !!3!! ");
+
     } 
     else{
     $.post('includes/funciones.php', obj, function() {});
