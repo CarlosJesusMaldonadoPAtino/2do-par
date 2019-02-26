@@ -12,6 +12,18 @@ switch ($_POST["accion"]) {
 	break;
 	default:
 	break;
+	case 'insertar_testimonials':
+	insertar_testimonials();
+	break;
+	case 'consultar_download':
+	consultar_download();
+	break;
+	case 'insertar_download':
+	insertar_download();
+	break;
+	default:
+	break;
+
 }
 function consultar_usuarios(){
 	global $mysqli;
@@ -37,6 +49,59 @@ function insertar_usuarios(){
 	}
 	echo json_encode($arregloin); //Imprime el JSON ENCODEADO
 }
+
+function consultar_testimonials(){
+	global $mysqli;
+	$consulta = "SELECT * FROM testimonial";
+	$resultado = mysqli_query($mysqli, $consulta);
+	$arreglo = [];
+	while($fila = mysqli_fetch_array($resultado)){
+		array_push($arreglo, $fila);
+	}
+	echo json_encode($arreglo); //Imprime el JSON ENCODEADO
+}
+function insertar_testimonials(){
+	global $mysqli;
+	$testimonial_imagen = $_POST["imagen"];
+	$testimonial_cita = $_POST["cita"];	
+	$testimonial_persona = $_POST["persona"];	
+	$consultain = "INSERT INTO testimonial VALUES('','$testimonial_imagen','$testimonial_cita','$testimonial_persona')";
+	$resultadoin = mysqli_query($mysqli, $consultain);
+	$arregloin = [];
+	while($filain = mysqli_fetch_array($resultadoin)){
+		array_push($arregloin, $filain);
+	}
+	echo json_encode($arregloin); //Imprime el JSON ENCODEADO
+}
+
+
+function consultar_download(){
+	global $mysqli;
+	$consulta = "SELECT * FROM download";
+	$resultado = mysqli_query($mysqli, $consulta);
+	$arreglo = [];
+	while($fila = mysqli_fetch_array($resultado)){
+		array_push($arreglo, $fila);
+	}
+	echo json_encode($arreglo); //Imprime el JSON ENCODEADO
+}
+function insertar_download(){
+	global $mysqli;
+	$download_titulo = $_POST["titulo"];
+	$download_subtitulo = $_POST["subtitulo"];	
+	$download_boton = $_POST["boton"];	
+	$consultain = "INSERT INTO download VALUES('','$download_titulo','$download_subtitulo','$download_boton')";
+	$resultadoin = mysqli_query($mysqli, $consultain);
+	$arregloin = [];
+	while($filain = mysqli_fetch_array($resultadoin)){
+		array_push($arregloin, $filain);
+	}
+	echo json_encode($arregloin); //Imprime el JSON ENCODEADO
+}
+
+
+
+
 
 	function login(){
 		global $mysqli;
