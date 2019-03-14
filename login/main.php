@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,12 +13,11 @@
   <link href="css/estilos.css" rel="stylesheet">
 </head>
 <body>
-
-  <?php require_once("includes/navbar.php");   ?>
+ <?php require_once("includes/navbar.php");   ?>
 
       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Main</h1>
+          <h1 class="h2">Header</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
               <button type="button" class="btn btn-sm btn-outline-danger cancelar">Cancelar</button>
@@ -25,14 +25,14 @@
             </div>
           </div>
         </div>
-        <h2>Encabezado</h2>
+        <h2>Header</h2>
         <div class="table-responsive view" id="show_data">
-          <table class="table table-striped table-sm" id="list-encabezado">
+          <table class="table table-striped table-sm" id="list-header">
             <thead>
               <tr>
                 <th>Titulo</th>
                 <th>Subtitulo</th>
-                <th>Boton</th>
+                <th>Botón</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -44,7 +44,7 @@
             <div class="row">
               <div class="col">
                 <div class="form-group">
-                  <label for="titulo">Titulo</label>
+                  <label for="nombre">Titulo</label>
                   <input type="text" id="titulo" name="titulo" class="form-control">
                 </div>
                 <div class="form-group">
@@ -54,7 +54,7 @@
               </div>
               <div class="col">
                 <div class="form-group">
-                  <label for="boton">Boton</label>
+                  <label for="boton">Botón</label>
                   <input type="text" id="boton" name="boton" class="form-control">
                 </div>
               </div>
@@ -76,12 +76,10 @@
   <script>
     function change_view(vista = 'show_data'){
       $("#main").find(".view").each(function(){
-        // $(this).addClass("d-none");
         $(this).slideUp('fast');
         let id = $(this).attr("id");
         if(vista == id){
           $(this).slideDown(300);
-          // $(this).removeClass("d-none");
         }
       });
 
@@ -95,17 +93,17 @@
         $.each(respuesta,function(i,e){
           template += `
           <tr>
-          <td>${e.titulo_en}</td>
-          <td>${e.subtitulo_en}</td>
-          <td>${e.boton_en}</td>
+          <td>${e.TituMa}</td>
+          <td>${e.SubtituMA}</td>
+          <td>${e.BotMA}</td>
           <td>
-          <a href="#" data-id="${e.id_en}">Editar</a>
-          <a href="#" data-id="${e.id_en}">Eliminar</a>
+          <a href="#" data-id="${e.idMa}" class="ceditar_encabezado">Editar</a>
+          <a href="#" data-id="${e.idMa}" class="eliminar_encabezado">Eliminar</a>
           </td>
           </tr>
           `;
         });
-        $("#list-encabezado tbody").html(template);
+        $("#list-header tbody").html(template);
       },"JSON");
     }
     $(document).ready(function(){
@@ -116,41 +114,96 @@
       change_view('insert_data');
     });
 
-    $("#guardar_datos").click(function(guardar){
+    $("#guardar_datos").click(function(){
      // Funcion para guardar Datos
       let titulo = $("#titulo").val();
       let subtitulo = $("#subtitulo").val();
       let boton = $("#boton").val();
       // Inicializar el objetos
       let obj ={
-        "accion" : "insertar_encabezado",
+        "accion" : "insertar_header",
         "titulo" : titulo,
         "subtitulo" : subtitulo,
         "boton" : boton
-      }
+      };
       $("#form_data").find("input").each(function(){
         $(this).removeClass("has-error");
-        if($(this).val() != ""){
+        if($(this).val() != ""){  
           obj[$(this).prop("name")] =  $(this).val();
         }else{
           $(this).addClass("has-error").focus();
           return false;
         }
       });
-      $.post("includes/_funciones.php", obj, function(verificado){ 
-      if (verificado != "" ) {
-       alert("Encabezado Registrado");
-        }
-      else {
-        alert("Encabezado NO Registrado");
+      if($(this).data("editar") == 1){
+          obj["accion"] = "editar_encabezado";
+          obj["id"] = $(this).data("id");
+          $(this).text("Guardar").data("editar",0);
+          $("#form_data")[0].reset();
+      }
+      $.post("includes/_funciones.php", obj, function(respuesta){ 
+       alert(respuesta);
+       if (respuesta == "Se inserto Main en la BD") {
+          change_view();
+          consultar();
+         }
+        if (respuesta == "Se edito Main correctamente") {
+            change_view();
+            consultar();
       } 
      }
      );
     });
 
+//** ELIMINAR ENCABEZADOS **//
+
+$("#main").on("click",".eliminar_encabezado",function(e){
+e.preventDefault();
+let confirmacion = confirm("Desea eliminar esta variable");
+if(confirmacion){
+let id = $(this).data('id');
+obj = {
+  "accion" : "eliminar_encabezado",
+  "id" : id
+};
+$.post("includes/_funciones.php", obj, function(respuesta){
+alert(respuesta);
+consultar();
+});
+
+
+}else{
+  alert("El registro no se esta eliminado");
+}
+});
+
+//** EDITAR **//
+    $('#list-header').on("click",".ceditar_encabezado", function(e){
+        e.preventDefault();
+    let id = $(this).data('id');
+         obj = {
+      "accion" : "ceditar_encabezado",
+      "id" : id
+    };
+    $("#form_data")[0].reset();
+    change_view('insert_data');
+    $("#guardar_datos").text("Editar").data("editar",1).data("id", id);
+    $.post('includes/_funciones.php', obj, function(r){
+      $("#titulo").val(r.TituMa);
+      $("#subtitulo").val(r.SubtituMA);
+      $("#boton").val(r.BotMA);  
+        }, "JSON");
+
+       // consultar();          
+            });
+
+
     $("#main").find(".cancelar").click(function(){
       change_view();
-      $("#form_data")[0].reset();
+      $("#form_data")[0].reset();      
+      if ($("#guardar_datos").data("editar") == 1) {
+        $("#guardar_datos").text("Guardar").data("editar",0);
+      }
     });
   </script>
 </body>

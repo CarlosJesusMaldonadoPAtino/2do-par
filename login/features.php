@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -98,8 +97,8 @@
           <td>${e.titulo_fe}</td>
           <td>${e.subtitulo_fe}</td>
           <td>
-          <a href="#" data-id="${e.id_fe}">Editar</a>
-          <a href="#" data-id="${e.id_fe}">Eliminar</a>
+          <a href="#" data-id="${e.id_fe}" class="ceditar_features">Editar</a>
+          <a href="#" data-id="${e.id_fe}" class="eliminar_features">Eliminar</a>>
           </td>
           </tr>
           `;
@@ -136,20 +135,78 @@
           return false;
         }
       });
-      $.post("includes/_funciones.php", obj, function(verificado){ 
-      if (verificado != "" ) {
-       alert("Feature Registrado");
-        }
-      else {
-        alert("Feature NO Registrado");
+      if($(this).data("editar") == 1){
+          obj["accion"] = "editar_features";
+          obj["id"] = $(this).data("id");
+          $(this).text("Guardar").data("editar",0);
+          $("#form_data")[0].reset();
+      }
+
+      $.post("includes/_funciones.php", obj, function(respuesta){ 
+        alert(respuesta);
+       if (respuesta == "Se inserto Feature en la BD") {
+          change_view();
+          consultar();
+         }
+        if (respuesta == "Se edito Feature correctamente") {
+            change_view();
+            consultar();
+
       } 
      }
      );
     });
 
+//** ELIMINAR REGISTRO **//
+$("#main").on("click",".eliminar_features",function(e){
+e.preventDefault();
+let confirmacion = confirm("Desea eliminar este registro");
+if(confirmacion){
+let id =$(this).data('id'),
+obj ={
+  "accion" : "eliminar_features",
+  "id" : id
+};
+$.post("includes/_funciones.php", obj, function(respuesta){
+alert(respuesta);
+consultar();
+});
+
+
+}else{
+  alert("El registro no se esta eliminado");
+}
+
+
+});
+
+//** EDITAR **//
+    $('#list-features').on("click",".ceditar_features", function(e){
+        e.preventDefault();
+    let id = $(this).data('id');
+         obj = {
+      "accion" : "ceditar_features",
+      "id" : id
+    };
+    $("#form_data")[0].reset();
+    change_view('insert_data');
+    $("#guardar_datos").text("Editar").data("editar",1).data("id", id);
+    $.post("includes/_funciones.php", obj, function(r){
+      $("#imagen").val(r.img_fe);
+      $("#titulo").val(r.titulo_fe);
+      $("#subtitulo").val(r.subtitulo_fe);    
+        }, "JSON");
+
+        //consultar();          
+            });
+
+
     $("#main").find(".cancelar").click(function(){
-      change_view();
       $("#form_data")[0].reset();
+            if ($("#guardar_datos").data("editar") == 1) {
+        $("#guardar_datos").text("Guardar").data("editar",0);
+      }
+
     });
   </script>
 </body>
